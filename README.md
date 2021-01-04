@@ -7,10 +7,8 @@ https://www.gpsvisualizer.com/map_input?form=googleearth
 
 ![Image of GPS Logger prototype](https://github.com/AirspeedCode/GPS_Logger/blob/master/gps_proto.jpg)
 
-![Image of CSV file format](https://github.com/AirspeedCode/GPS_Logger/blob/master/csv_format.PNG)
-
 # CSV Data File Format
-
+![Image of CSV file format](https://github.com/AirspeedCode/GPS_Logger/blob/master/csv_format.PNG)
 
 # Problems
 1. No known problems
