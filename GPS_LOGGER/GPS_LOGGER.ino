@@ -38,6 +38,11 @@ char* filename = "00000000/000000.csv";     // path
 char timeString[9] = "00:00:00"; // time
 File myFile;
 
+// Error Codes
+const int ERR_GENERAL = 0;
+const int ERR_SD_CARD = 1;
+const int ERR_SD_FILE_OPENING = 2;
+
 //
 unsigned long startTime = 0;
 
@@ -143,8 +148,38 @@ bool processGPS() {
   return false;
 }
 
+void printErrorCode(int errorCode){
+  
+  Serial.print("Error : ");  
+   switch(errorCode){
+    case ERR_GENERAL: Serial.print("ERR_GENERAL"); break;
+    case ERR_SD_CARD: Serial.print("ERR_SD_CARD"); break;
+    case ERR_SD_FILE_OPENING: Serial.print("ERR_SD_FILE_OPENING"); break;
+    default: Serial.print("None");  break;
+  }
+  
+  Serial.println();
+  return;
+}
+
+void printState(int state){
+  Serial.print("State: "); 
+  switch(state){
+    case NO_FIX: Serial.print("NO_FIX"); break;
+    case NOT_RECORDING: Serial.print("NOT_RECORDING"); break;
+    case RECORDING: Serial.print("RECORDING");  break;
+    case DUMMY: Serial.print("DUMMY");  break;
+    default: Serial.print("");  break;
+  }
+  Serial.println();
+  return;
+}
+
+
 void setup() 
 {
+  
+  
   // Configure digital IO pin directions
   pinMode(FIX_LIGHT_pin, OUTPUT);
   pinMode(REC_LIGHT_pin, OUTPUT);
@@ -158,11 +193,15 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-    
+
+  Serial.println();
+  Serial.println("**** BOOT ****");
+  Serial.println();
+
   if (!SD.begin(4)) {
-    Serial.println("SD Error");
+    printErrorCode(ERR_SD_CARD);
     SD_ERROR = true;
-    //while (1);
+    while (1);
   }
 
 }
@@ -185,7 +224,8 @@ void loop() {
     case NO_FIX:  
       // ENTRY
       if (last_state != NO_FIX){
-        Serial.println("State : NO_FIX");
+        //Serial.println("State : NO_FIX");
+        printState(state);
       } 
       
       // DO
@@ -198,6 +238,7 @@ void loop() {
       }
       
       DISPLAY_GPS = false;
+      //DISPLAY_GPS = true;
       SAVE_DATA = false;
 
       // NEXT STATE
@@ -212,7 +253,8 @@ void loop() {
     case NOT_RECORDING:
       // ENTRY
       if (last_state != NOT_RECORDING){
-        Serial.println("State : NOT_RECORDING");
+        //Serial.println("State : NOT_RECORDING");
+        printState(state);
       }
        
       // DO
@@ -239,7 +281,8 @@ void loop() {
     case RECORDING:
       // ENTRY
       if (last_state != RECORDING){
-        Serial.println("State : RECORDING");
+        //Serial.println("State : RECORDING");
+        printState(state);
         
         // generate new filename in format 'YYYYMMDD/HHMMSS.csv'
         sprintf(dirname, "%04d%02d%02d", pvt.year, pvt.month, pvt.day);
@@ -260,13 +303,16 @@ void loop() {
         if (myFile) {
           myFile.println("Time, Elapsed Time (ms),Latitude (deg),Longitude (deg),Height (m),Ground Speed (m/s),Heading (deg)");
           // close the file:
-          myFile.close();
+          // myFile.close();
         } else {
           // if the file didn't open, print an error:
           SD_ERROR = true;
-          Serial.print("State Machine - Error opening file: "); Serial.print(filename); Serial.println();
+          printErrorCode(ERR_SD_FILE_OPENING);
+          //Serial.print("State Machine - Error opening file: "); Serial.print(filename); Serial.println();
         }
 
+        myFile.close();
+        
         // Get the start time for the recording (ms)
         startTime = pvt.iTOW;
            
@@ -343,13 +389,18 @@ void loop() {
         myFile.print(pvt.heading/100000.0f, 1); // Heading (degrees)
         myFile.println();
         // close the file:
-        myFile.close();
+        //myFile.close();
       } else {
         // if the file didn't open, print an error:
+        printErrorCode(ERR_SD_FILE_OPENING);
+        
         SD_ERROR = true;
-        Serial.print("Loop - Error opening file: "); Serial.print(filename);
+        Serial.print("Error opening:"); Serial.print(filename);
         Serial.println();
       }
+
+       // close the file:
+       myFile.close();
       
     }
         

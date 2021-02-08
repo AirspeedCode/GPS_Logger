@@ -11,8 +11,7 @@ https://www.gpsvisualizer.com/map_input?form=googleearth
 ![Image of CSV file format](https://github.com/AirspeedCode/GPS_Logger/blob/master/csv_format.PNG)
 
 # Problems
-1. SD Card error sometimes triggered when creating a new folder for the day. This only seems to happen if there is already a folder in existence. If the SD card is previously empty, the folder is ceated without any issues.
+No known problems
 
 # TO DO
-1. Fix SD card error
-2. Put it in a box
+1. Put it in a box
