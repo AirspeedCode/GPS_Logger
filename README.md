@@ -16,3 +16,4 @@ No known problems
 # TO DO
 1. Put it in a box
 2. Add UTC format timestamp to saved data, based on received GPS data
+3. Add support for an external XBEE Module, to use UART TX & RX, plus SPI interface
